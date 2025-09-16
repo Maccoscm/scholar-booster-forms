@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CareerBoosters Order Form</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --navy-blue: #1A2526;
+            --white: #FFFFFF;
+            --gold: #D4A017;
+        }
+
+        body {
+            background-color: var(--white);
+        }
+
+        .navy-blue-bg {
+            background-color: var(--navy-blue);
+        }
+
+        .navy-blue-text {
+            color: var(--navy-blue);
+        }
+
+        .gold-bg {
+            background-color: var(--gold);
+        }
+
+        .gold-text {
+            color: var(--gold);
+        }
+
+        .gold-border {
+            border-color: var(--gold);
+        }
+
+        .white-bg {
+            background-color: var(--white);
+        }
+
+        .white-text {
+            color: var(--white);
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 0 2px rgba(212, 160, 23, 0.2);
+        }
+    </style>
+</head>
+
+<body class="flex items-center justify-center min-h-screen">
+    <div class="white-bg p-8 rounded-lg shadow-lg w-full max-w-md border gold-border">
+        <h1 class="text-2xl font-bold mb-6 text-center navy-blue-text">CareerBoosters Order Instructions</h1>
+        <form id="orderForm" class="space-y-4" action="https://formspree.io/f/mvgbnbqa" method="POST"
+            enctype="multipart/form-data">
+            <div>
+                <label for="customerId" class="block text-sm font-medium navy-blue-text">Customer ID</label>
+                <input type="text" id="customerId" name="customerId"
+                    class="mt-1 block w-full p-2 border gold-border rounded-md white-bg navy-blue-text" readonly>
+            </div>
+            <div>
+                <label for="serviceType" class="block text-sm font-medium navy-blue-text">Service Type</label>
+                <select id="serviceType" name="serviceType"
+                    class="mt-1 block w-full p-2 border gold-border rounded-md white-bg navy-blue-text" required>
+                    <option value="" disabled selected>Select a service</option>
+                    <option value="dissertationEditing">Dissertation Editing</option>
+                    <option value="proposalEditing">Proposal Editing</option>
+                    <option value="coaching">Coaching</option>
+                </select>
+            </div>
+            <div id="deliverySpeedContainer" class="hidden">
+                <label for="deliverySpeed" class="block text-sm font-medium navy-blue-text">Delivery Speed</label>
+                <select id="deliverySpeed" name="deliverySpeed"
+                    class="mt-1 block w-full p-2 border gold-border rounded-md white-bg navy-blue-text" required>
+                    <option value="" disabled selected>Select delivery speed</option>
+                    <option value="standard">Standard (7 days)</option>
+                    <option value="express">Express (3 days)</option>
+                    <option value="rush">Rush (48 hours)</option>
+                </select>
+            </div>
+            <div id="wordCountContainer" class="hidden">
+                <label for="wordCount" class="block text-sm font-medium navy-blue-text">Word Count</label>
+                <input type="number" id="wordCount" name="wordCount" min="1"
+                    class="mt-1 block w-full p-2 border gold-border rounded-md white-bg navy-blue-text"
+                    placeholder="Enter word count" required>
+            </div>
+            <div id="hoursContainer" class="hidden">
+                <label for="hours" class="block text-sm font-medium navy-blue-text">Hours</label>
+                <input type="number" id="hours" name="hours" min="1" step="0.5"
+                    class="mt-1 block w-full p-2 border gold-border rounded-md white-bg navy-blue-text"
+                    placeholder="Enter hours (e.g., 1.5)" required>
+            </div>
+            <div>
+                <p id="costEstimate" class="mt-2 text-lg font-semibold gold-text text-center">Estimated Cost: $0.00</p>
+            </div>
+            <div>
+                <label for="instructions" class="block text-sm font-medium navy-blue-text">Instructions</label>
+                <textarea id="instructions" name="instructions" rows="5"
+                    class="mt-1 block w-full p-2 border gold-border rounded-md white-bg navy-blue-text"
+                    placeholder="Provide detailed instructions for your order" required></textarea>
+            </div>
+            <div>
+                <label for="fileUpload" class="block text-sm font-medium navy-blue-text">Upload Document
+                    (Optional)</label>
+                <input type="file" id="fileUpload" name="fileUpload" accept=".pdf,.doc,.docx"
+                    class="mt-1 block w-full p-2 border gold-border rounded-md white-bg navy-blue-text">
+            </div>
+            <div>
+                <button type="submit" class="w-full navy-blue-bg white-text p-2 rounded-md hover:bg-opacity-90">Submit
+                    Order</button>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://formspree.io/js/f/mvgbnbqa/form.js" defer></script>
+    <script>
+        // Formspree JS library handles AJAX submission with success/error callbacks
+        document.getElementById('orderForm').addEventListener('submit', function (e) {
+            const customerId = document.getElementById('customerId').value;
+            if (!customerId) {
+                e.preventDefault();
+                alert('Customer ID is missing. Please reload the page to generate a new ID.');
+                return;
+            }
+
+            // Validate required fields based on service type
+            const serviceType = document.getElementById('serviceType').value;
+            if (!serviceType) {
+                e.preventDefault();
+                alert('Please select a service type.');
+                return;
+            }
+            if (serviceType === 'coaching') {
+                const hours = document.getElementById('hours').value;
+                if (!hours || hours <= 0) {
+                    e.preventDefault();
+                    alert('Please enter the number of hours for coaching.');
+                    return;
+                }
+            } else {
+                const deliverySpeed = document.getElementById('deliverySpeed').value;
+                const wordCount = document.getElementById('wordCount').value;
+                if (!deliverySpeed || !wordCount || wordCount <= 0) {
+                    e.preventDefault();
+                    alert('Please select delivery speed and enter word count.');
+                    return;
+                }
+            }
+            if (!document.getElementById('instructions').value.trim()) {
+                e.preventDefault();
+                alert('Please provide instructions.');
+                return;
+            }
+
+            // Store order data for confirmation page
+            const orderData = {
+                customerId: customerId,
+                serviceType: serviceType,
+                deliverySpeed: document.getElementById('deliverySpeed').value,
+                wordCount: document.getElementById('wordCount').value,
+                hours: document.getElementById('hours').value,
+                totalCost: parseFloat(document.getElementById('costEstimate').textContent.replace('Estimated Cost: $', '')) || 0
+            };
+            localStorage.setItem('orderData', JSON.stringify(orderData));
+        });
+
+        // Success/Error callbacks via Formspree JS (after submission)
+        window.formspreeSuccess = function () {
+            alert('Order submitted successfully! Your Customer ID is ' + document.getElementById('customerId').value + '. We will review your instructions and get back to you soon.');
+            // Optional: Redirect to confirmation page
+            // window.location.href = 'confirmation.html';
+        };
+        window.formspreeFailure = function () {
+            alert('Submission failed. Please try again or check your connection. If issues persist, contact support.');
+        };
+
+        // Simulate server-side customer ID generation
+        function generateCustomerId() {
+            return 'CUST-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+        }
+
+        // Set customer ID on page load
+        document.getElementById('customerId').value = generateCustomerId();
+
+        const prices = {
+            dissertationEditing: {
+                standard: 35,
+                express: 50,
+                rush: 65
+            },
+            proposalEditing: {
+                standard: 25,
+                express: 40,
+                rush: 55
+            },
+            coaching: {
+                rate: 60 // $60 per hour
+            }
+        };
+
+        function toggleInputFields() {
+            const serviceType = document.getElementById('serviceType').value;
+            const deliverySpeedContainer = document.getElementById('deliverySpeedContainer');
+            const wordCountContainer = document.getElementById('wordCountContainer');
+            const hoursContainer = document.getElementById('hoursContainer');
+
+            if (serviceType === 'coaching') {
+                deliverySpeedContainer.classList.add('hidden');
+                wordCountContainer.classList.add('hidden');
+                hoursContainer.classList.remove('hidden');
+                document.getElementById('deliverySpeed').removeAttribute('required');
+                document.getElementById('wordCount').removeAttribute('required');
+                document.getElementById('hours').setAttribute('required', '');
+            } else {
+                deliverySpeedContainer.classList.remove('hidden');
+                wordCountContainer.classList.remove('hidden');
+                hoursContainer.classList.add('hidden');
+                document.getElementById('deliverySpeed').setAttribute('required', '');
+                document.getElementById('wordCount').setAttribute('required', '');
+                document.getElementById('hours').removeAttribute('required');
+            }
+            calculateCost();
+        }
+
+        function calculateCost() {
+            const serviceType = document.getElementById('serviceType').value;
+            const deliverySpeed = document.getElementById('deliverySpeed').value;
+            const wordCount = parseInt(document.getElementById('wordCount').value) || 0;
+            const hours = parseFloat(document.getElementById('hours').value) || 0;
+            const costEstimate = document.getElementById('costEstimate');
+
+            if (serviceType === 'coaching' && hours > 0) {
+                const totalCost = hours * prices.coaching.rate;
+                costEstimate.textContent = `Estimated Cost: $${totalCost.toFixed(2)}`;
+            } else if (serviceType && deliverySpeed && wordCount > 0) {
+                const costPerThousand = prices[serviceType][deliverySpeed];
+                const totalCost = (wordCount / 1000) * costPerThousand;
+                costEstimate.textContent = `Estimated Cost: $${totalCost.toFixed(2)}`;
+            } else {
+                costEstimate.textContent = 'Estimated Cost: $0.00';
+            }
+        }
+
+        // Attach event listeners
+        document.getElementById('serviceType').addEventListener('change', () => {
+            toggleInputFields();
+            calculateCost();
+        });
+        document.getElementById('deliverySpeed').addEventListener('change', calculateCost);
+        document.getElementById('wordCount').addEventListener('input', calculateCost);
+        document.getElementById('hours').addEventListener('input', calculateCost);
+
+        // Initial setup
+        toggleInputFields();
+        calculateCost();
+    </script>
+</body>
+
+</html>
